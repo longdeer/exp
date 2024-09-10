@@ -2,5 +2,5 @@
 My notes about algorithms and stuff
 Installation:
 ```
-https://github.com/longdeer/longalgos
+git clone https://github.com/longdeer/longalgos
 ```
