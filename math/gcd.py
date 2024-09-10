@@ -1,0 +1,28 @@
+# From Wikipedia, the free encyclopedia
+# In mathematics, the greatest common divisor (GCD), also known as greatest common factor (GCF), of two or more
+# integers, which are not all zero, is the largest positive integer that divides each of the integers. For two
+# integers x, y, the greatest common divisor of x and y is denoted gcd(x,y). For example, the GCD of 8 and 12
+# is 4, that is, gcd(8, 12) = 4
+# In the name "greatest common divisor", the adjective "greatest" may be replaced by "highest", and the word
+# "divisor" may be replaced by "factor", so that other names include highest common factor, etc. Historically,
+# other names for the same concept have included greatest common measure.
+# This notion can be extended to polynomials (see Polynomial greatest common divisor) and other commutative
+# rings
+#
+# Euclidean algorithm, a variant in which the difference of the two numbers a and b is replaced
+# by the remainder of the Euclidean division (also called division with remainder) of a by b.
+# Denoting this remainder as a mod b, the algorithm replaces (a, b) with (b, a mod b) repeatedly
+# until the pair is (d, 0), where d is the greatest common divisor.
+# For example, to compute gcd(48,18), the computation is as follows:
+# 	gcd(48,18)	-> gcd(18,48 mod 18) = gcd(18,12)
+# 				-> gcd(12,18 mod 12) = gcd(12,6)
+# 				-> gcd(6,12 mod 6) = gcd(6,0).
+# This again gives gcd(48, 18) = 6.
+def gcd(a :int, b :int) -> int : return a if  b == 0 else gcd(b,a %b)
+
+
+
+
+
+
+
