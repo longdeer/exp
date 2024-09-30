@@ -12,7 +12,7 @@ from itertools		import filterfalse
 
 
 
-def fstree(root :str | Path) -> Generator[Tuple[Path, List[Path], List[Path] | List], None,None] :
+def fstree(root :str | Path) -> Generator[Tuple[Path, List[Path], List[Path]] | List, None,None] :
 
 	"""
 		Iterative analogue for standard library os.walk.
