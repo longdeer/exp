@@ -14,7 +14,7 @@ def make_file(path :str):
 
 
 FLOOD_COUNTER = int(sys.argv[1])	# root doesn't count
-flood = deque([( os.getcwd(),1 )])
+flood = deque([( os.getcwd(),0,1 )])
 
 
 
@@ -27,17 +27,17 @@ while flood and 0 <FLOOD_COUNTER:
 
 
 	for _ in range(len(flood)):
-		directory,q = flood.pop()
+		directory, prefix, q = flood.pop()
 
 
 		for i in range(q):
-			current = os.path.join(directory, str(i))
+			current = os.path.join(directory, f"{prefix}{i}")
 
 
 			if	i &1 : make_file(current)
 			else:
 				os.mkdir(current)
-				flood.appendleft(( current,q +1 ))
+				flood.appendleft(( current, prefix +1, q +1 ))
 
 
 			FLOOD_COUNTER -= 1
