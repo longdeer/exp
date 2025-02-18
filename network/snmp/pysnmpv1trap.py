@@ -1,3 +1,8 @@
+# python	3.10
+# pysmi		0.3.4
+# pysnmp	4.4.11
+# author: lngd
+# lngdeer@gmail.com
 from typing								import Any
 from typing								import List
 from typing								import Dict
@@ -55,8 +60,9 @@ class AsyncoreDispatcher(AsyncoreDispatcher):
 class PySNMPv1Trap:
 	def __init__(self):
 
-		self.builder = builder.MibBuilder()
-		self.viewer = view.MibViewController(self.builder)
+		self.builder	= builder.MibBuilder()
+		self.viewer		= view.MibViewController(self.builder)
+		self.handlers	= list()
 
 	def __call__(
 					self,
@@ -79,6 +85,7 @@ class PySNMPv1Trap:
 					]
 				):
 
+		# Following is the typical trap example, according to official documentation.
 		ENGINE = SnmpEngine()
 		ENGINE.registerTransportDispatcher(AsyncoreDispatcher())
 
@@ -97,8 +104,24 @@ class PySNMPv1Trap:
 			ENGINE.transportDispatcher.jobStarted(1)
 			ENGINE.transportDispatcher.runDispatcher(listen_time)
 
-		except		Exception as E : print(f"\n\ninner {patronus(E)}")
 		finally:	ENGINE.transportDispatcher.closeDispatcher()
+
+
+	def add_handler(self, handler :Callable[[Tuple[str,str,str,str,str,str,str]],None]):
+
+		"""
+			Helper method for adding external trap data handler.
+			Argument "handler" must be callable which must accept, according to "callback", a tuple of:
+				SRC		string,
+				NMOD	string,
+				NSYM	string,
+				NIND	string,
+				VMOD	string,
+				VSYM	string,
+				VIND	string.
+		"""
+
+		if	callable(handler): self.handlers.append(handler)
 
 
 	def get_modules(self, sources :List[str], modules :List[str]):
@@ -119,7 +142,6 @@ class PySNMPv1Trap:
 
 		context = engine.observer.getExecutionContext("rfc3412.receiveMessage:request")
 		SRC = context["transportAddress"][0]
-		responses = { SRC: list() }
 
 
 		for name, value in bind_variables:
@@ -140,11 +162,19 @@ class PySNMPv1Trap:
 			except:	VMOD, VSYM, VIND = str(), str(rfcobj[1]), str()
 
 
-			print(( str(NMOD), str(NSYM), str(NIND), str(VMOD), str(VSYM), str(VIND) ))
-			# responses[SRC].append(( str(NMOD), str(NSYM), str(NIND), str(VMOD), str(VSYM), str(VIND) ))
+			# ObjectIdentity value might be some empty tuple and so on, the best idea to
+			# convert all to actual trully/galsy strings.
+			current = (
+
+				str(SRC),
+				str(NMOD), str(NSYM), str(NIND),
+				str(VMOD), str(VSYM),
+				str(VIND) if VIND else str()
+			)
 
 
-		return	responses
+			# At this point all external handlers will be invoked for current trap tuple.
+			for handler in self.handlers : handler(current)
 
 
 
@@ -157,9 +187,10 @@ if	__name__ == "__main__":
 
 
 	test = PySNMPv1Trap()
+	test.add_handler(lambda *args : [ print(arg) for arg in args ])
 	test.get_modules(
 
-		[ "/home/vla/.pysnmp/mibs" ],
+		[ "~/.pysnmp/mibs" ],
 		[ "SNMPv2-MIB", "IF-MIB", "SNMP-COMMUNITY-MIB", "XPPC-MIB", "POLYGON-MIB", "POLYCOM740-MIB" ]
 	)
 	test("127.0.0.18", 54321, 10, "trap", "area", test.callback)
