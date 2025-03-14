@@ -63,6 +63,7 @@ class PySNMPv1Trap:
 		self.builder	= builder.MibBuilder()
 		self.viewer		= view.MibViewController(self.builder)
 		self.handlers	= list()
+		self.loaded		= list()
 
 	def __call__(
 					self,
@@ -126,8 +127,20 @@ class PySNMPv1Trap:
 
 	def get_modules(self, sources :List[str], modules :List[str]):
 
+		"""
+			Loads MIB modules lists.
+			All loaded modules will be accessible by "loaded" attribute.
+		"""
+
 		self.builder.addMibSources(*( builder.DirMibSource(S) for S in sources ))
 		self.builder.loadModules(*modules)
+		module_name	= self.viewer.getFirstModuleName()
+
+		while True:
+
+			if module_name:	self.loaded.append(module_name)
+			try:			module_name = self.viewer.getNextModuleName(module_name)
+			except:			break
 
 
 	def callback(
@@ -190,7 +203,7 @@ if	__name__ == "__main__":
 	test.add_handler(lambda *args : [ print(arg) for arg in args ])
 	test.get_modules(
 
-		[ "~/.pysnmp/mibs" ],
+		[ "/home/vla/.pysnmp/mibs" ],
 		[ "SNMPv2-MIB", "IF-MIB", "SNMP-COMMUNITY-MIB", "XPPC-MIB", "POLYGON-MIB", "POLYCOM740-MIB" ]
 	)
 	test("127.0.0.18", 54321, 10, "trap", "area", test.callback)
