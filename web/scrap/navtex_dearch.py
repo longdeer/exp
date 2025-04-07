@@ -16,10 +16,12 @@ from	bs4						import BeautifulSoup
 
 
 
+SET		= set()
 ROOT	= "https://www.navtex.net/Navtex_Archive"
 FOLDER	= "/mnt/container/NavtexArchive"
 NAMEP	= re.compile(r"(?P<name>[A-Za-z]{2}\d\d)\.txt$")
 LOGGER	= LibraryContrib(init_name="dearch", handler=os.path.join(FOLDER, "dearch.loggy"))
+
 
 def LOGGY(message):
 
@@ -49,7 +51,7 @@ def save_message(text :str, path :str) -> bool :
 	else:	return True
 
 
-for Y in range(2016,2025):
+for Y in range(2017,2018):
 	for m in range(1,13):
 
 		tpoint = datetime(Y,m,1)
@@ -60,7 +62,9 @@ for Y in range(2016,2025):
 			d = tpoint.day
 			df = str(d).zfill(2)
 			day_point = f"{Y}-{mf}-{df}"
-			catalog = f"{ROOT}/{Y}%20/{Y}-{mf}%20/{day_point}"
+			# catalog = f"{ROOT}/{Y}%20/{Y}-{mf}%20/{day_point}"
+			catalog = f"{ROOT}/{Y}%20/{Y}-{mf}/{day_point}"
+			current = dict()
 
 			LOGGY(f"going {catalog}")
 			page = GET(catalog).text
@@ -69,19 +73,30 @@ for Y in range(2016,2025):
 			soup = BeautifulSoup(page, "html.parser")
 
 			for link in soup.find_all("a"):
-				if	(href := link.get("href")).startswith(day_point):
+				if	(href := link.get("href")).startswith(day_point) and (match := NAMEP.search(href)):
 
+					name = match.group("name").upper()
 					load = f"{catalog}/{href}"
-					LOGGY(f"trying {load}")
+					current[name] = load
 
-					if	isinstance(message := get_message(load), str):
-						if	(match := NAMEP.search(href)) and (name := match.group("name")):
-							if	(result := save_message(
+			fetched = set(current)
+			operate = fetched - SET
+			expired = SET - fetched
 
-								message,
-								os.path.join(FOLDER, str(Y), mf, df, name.upper())
-							)):
-								LOGGY(f"hit {href}")
+			for name in expired: SET.remove(name)
+			for name in operate:
+
+				load = current[name]
+				LOGGY(f"trying {load}")
+
+				if	isinstance(message := get_message(load), str):
+					if	(result := save_message(
+
+						message,
+						os.path.join(FOLDER, str(Y), mf, df, name)
+					)):
+						LOGGY(f"hit {name}")
+						SET.add(name)
 
 				sleep(.6)
 
