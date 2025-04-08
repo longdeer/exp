@@ -16,11 +16,12 @@ from	bs4						import BeautifulSoup
 
 
 
-SET		= set()
-ROOT	= "https://www.navtex.net/Navtex_Archive"
+Y		= 2018
+RUNNING	= set()
 FOLDER	= "/mnt/container/NavtexArchive"
+ROOT	= "https://www.navtex.net/Navtex_Archive"
 NAMEP	= re.compile(r"(?P<name>[A-Za-z]{2}\d\d)\.txt$")
-LOGGER	= LibraryContrib(init_name="dearch", handler=os.path.join(FOLDER, "dearch.loggy"))
+LOGGER	= LibraryContrib(init_name="dearch", handler=os.path.join(FOLDER, f"dearch-{Y}.loggy"))
 
 
 def LOGGY(message):
@@ -51,56 +52,54 @@ def save_message(text :str, path :str) -> bool :
 	else:	return True
 
 
-for Y in range(2017,2018):
-	for m in range(1,13):
+for m in range(1,13):
 
-		tpoint = datetime(Y,m,1)
-		mf = str(m).zfill(2)
+	tpoint = datetime(Y,m,1)
+	mf = str(m).zfill(2)
 
-		while tpoint.month == m:
+	while tpoint.month == m:
 
-			d = tpoint.day
-			df = str(d).zfill(2)
-			day_point = f"{Y}-{mf}-{df}"
-			# catalog = f"{ROOT}/{Y}%20/{Y}-{mf}%20/{day_point}"
-			catalog = f"{ROOT}/{Y}%20/{Y}-{mf}/{day_point}"
-			current = dict()
+		d	= tpoint.day
+		df	= str(d).zfill(2)
+		day_point = f"{Y}-{mf}-{df}"
+		catalog = f"{ROOT}/{Y}%20/{Y}-{mf}%20/{day_point}"
+		current = dict()
 
-			LOGGY(f"going {catalog}")
-			page = GET(catalog).text
+		LOGGY(f"going {catalog}")
+		page = GET(catalog).text
 
-			LOGGY(f"got {len(page)} symbols page")
-			soup = BeautifulSoup(page, "html.parser")
+		LOGGY(f"got {len(page)} symbols page")
+		soup = BeautifulSoup(page, "html.parser")
 
-			for link in soup.find_all("a"):
-				if	(href := link.get("href")).startswith(day_point) and (match := NAMEP.search(href)):
+		for link in soup.find_all("a"):
+			if	(href := link.get("href")).startswith(day_point) and (match := NAMEP.search(href)):
 
-					name = match.group("name").upper()
-					load = f"{catalog}/{href}"
-					current[name] = load
+				name = match.group("name").upper()
+				load = f"{catalog}/{href}"
+				current[name] = load
 
-			fetched = set(current)
-			operate = fetched - SET
-			expired = SET - fetched
+		fetched = set(current)
+		operate = fetched - RUNNING
+		expired = RUNNING - fetched
 
-			for name in expired: SET.remove(name)
-			for name in operate:
+		for name in expired: RUNNING.remove(name)
+		for name in operate:
 
-				load = current[name]
-				LOGGY(f"trying {load}")
+			load = current[name]
+			LOGGY(f"trying {load}")
 
-				if	isinstance(message := get_message(load), str):
-					if	(result := save_message(
+			if	isinstance(message := get_message(load), str):
+				if	(result := save_message(
 
-						message,
-						os.path.join(FOLDER, str(Y), mf, df, name)
-					)):
-						LOGGY(f"hit {name}")
-						SET.add(name)
+					message,
+					os.path.join(FOLDER, str(Y), mf, df, name)
+				)):
+					LOGGY(f"hit {name}")
+					RUNNING.add(name)
 
-				sleep(.6)
+			sleep(.6)
 
-			tpoint += timedelta(days=1)
+		tpoint += timedelta(days=1)
 
 
 
