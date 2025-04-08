@@ -16,7 +16,7 @@ from	bs4						import BeautifulSoup
 
 
 
-Y		= 2018
+Y		= 2019
 RUNNING	= set()
 FOLDER	= "/mnt/container/NavtexArchive"
 ROOT	= "https://www.navtex.net/Navtex_Archive"
@@ -30,15 +30,17 @@ def LOGGY(message):
 	print(message)
 
 
-def get_message(url :str) -> str :
+def get_message(url :str) -> str | None :
 
-	if	(response := GET(url)):
-		chunks = response.text.split("\n")
+	try:
+
+		chunks = GET(url).text.split("\n")
 
 		while not chunks[0].startswith("ZCZC"):		chunks.pop(0)
 		while not chunks[-1].startswith("NNNN"):	chunks.pop()
 
-		return "".join(chunks)
+	except	Exception as E : LOGGY(f"crit {patronus(E)}")
+	else:	return "".join(chunks)
 
 
 def save_message(text :str, path :str) -> bool :
