@@ -1,3 +1,4 @@
+#!/usr/bin/bash
 ### manage ARP cache
 ### params:
 ### $1 - log file path string
