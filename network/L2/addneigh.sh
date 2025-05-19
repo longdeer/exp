@@ -21,19 +21,19 @@ devname=$2
 
 
 addneigh()
-# $1 - host name string
-# $2 - host ip4 string
-# $3 - host MAC string
+# $1 - host ip4 string
+# $2 - host MAC string
+# $3 - host name string
 {
-	echo "caching $1 at $3" >> $loggy
+	echo "caching $3 at $2" >> $loggy
 
-	neighmac=$(echo $3 | sed -e s/-/:/g)
-	neightry=$(ip neigh add $2 lladdr $neighmac nud permanent dev $devname 2>&1)
+	neighmac=$(echo $2 | sed -e s/-/:/g)
+	neightry=$(ip neigh add $1 lladdr $neighmac nud permanent dev $devname 2>&1)
 
 	if		[[ $neightry == "" ]]; then echo "adding done" >> $loggy
 	elif	[[ $neightry == "RTNETLINK answers: File exists"* ]]; then
 
-		neightry=$(ip neigh replace $2 lladdr $neighmac nud permanent dev $devname 2>&1)
+		neightry=$(ip neigh replace $1 lladdr $neighmac nud permanent dev $devname 2>&1)
 
 		if		[[ $neightry == "" ]]; then echo "replacing done" >> $loggy
 		else	echo $neightry >> $loggy
