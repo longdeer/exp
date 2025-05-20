@@ -11,11 +11,12 @@ from typing			import Tuple
 
 
 
-def byte_scan(path :str | Path) -> Tuple[bool,str] :
+def byte_scan(path :str | Path, carriage :bool =False) -> Tuple[bool,str] :
 
 	"""
 		Reads "path" file in byte mode and recreates whole text. If any not utf-8 symbol will be
 		encountered, it will be substituted with "*" and "broken" flag will be set to True.
+		Optional flag "carriage" allows treating carriage return symbol "\\r" as new line.
 		Returns the tuple of "broken" flag and recreated text string. Doesn't handle any
 		possible Exceptions, but ensures "path" is accessible file.
 	"""
@@ -32,7 +33,7 @@ def byte_scan(path :str | Path) -> Tuple[bool,str] :
 
 					match (symbol := B.decode()):
 
-						case "\r":	text += "\n"
+						case "\r":	text += "\n" if carriage else ""
 						case _:		text += symbol
 
 				except:	text,broken = text + "*",True
