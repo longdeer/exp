@@ -1,18 +1,16 @@
-from typing									import List
-from os										import listdir
-from time									import sleep
-# from sys									import exit
-from telebot								import TeleBot
-from telebot.types							import Message
-from pygwarts.magical.philosophers_stone	import Transmutable
-from pygwarts.magical.time_turner			import TimeTurner
-from pygwarts.magical.spells				import patronus
-# from pygwarts.magical.time_turner.timers	import Sectimer
-from pygwarts.irma.shelve					import LibraryShelf
-from pygwarts.irma.contrib					import LibraryContrib
-# from pygwarts.hagrid.cultivation.navtex		import NavBoW2
-from credistr								import tlg_id_lngd
-from credistr								import tlg_bot_serverbot
+import	os
+from	typing								import Tuple
+from	time								import sleep
+from	telebot								import TeleBot
+from	telebot.types						import Message
+from	pygwarts.magical.time_turner		import TimeTurner
+from	pygwarts.magical.time_turner.timers	import mostsec
+from	pygwarts.magical.spells				import patronus
+from	pygwarts.irma.contrib				import LibraryContrib
+from	credistr							import tlg_id_lngd
+from	credistr							import tlg_bot_serverbot
+from	lngd_local_scanner					import byte_scan
+from	navbow								import NavbowController
 
 
 
@@ -21,332 +19,163 @@ from credistr								import tlg_bot_serverbot
 
 
 
-
-
-
-
-
-
-
-
-
-def server_controller(BOT :TeleBot, user :int, message :str, logger :LibraryContrib):
+def server_controller(
+						BOT		:TeleBot,
+						Navbow	:NavbowController,
+						logger	:LibraryContrib,
+						tpoint	:TimeTurner,
+						user	:int,
+						command	:str,
+						args	:Tuple[str,]
+					):
 
 	"""
 		Implements following operations:
 		help		- show this message
 		uptime		- show uptime of the BOT
-		loggy		- parse DATE MODULE NAME [LEVEL] loggy variations like:
-		04/06/2023,1442 hagrid navdrop [INFO/WARNING/ERROR/CRITICAL]
-		04/06/2023,1442 hagrid softsync [INFO/WARNING/ERROR/CRITICAL]
-		04/06/2023,1442 hagrid hardsync [INFO/WARNING/ERROR/CRITICAL]
-		04/06/2023,1442 hagrid arch [INFO/WARNING/ERROR/CRITICAL]
-		04/06/2023,1442 hagrid,navBoW navBoW [INFO/WARNING/ERROR/CRITICAL]
-		04/06/2023,1442 filch discovery [INFO/WARNING/ERROR/CRITICAL]
-		04/06/2023,1442 filch broadwatch [INFO/WARNING/ERROR/CRITICAL]
-		04/06/2023,1442 filch polywatch [INFO/WARNING/ERROR/CRITICAL]
-		04/06/2023,1442 hedwig report [INFO/WARNING/ERROR/CRITICAL]
-		04/06/2023,1442 irma library [INFO/WARNING/ERROR/CRITICAL]
-		04/06/2023,1442 irma,annex library INFO/WARNING/ERROR/CRITICAL
-		lsplot		- list DATE plots
-		plot		- send broadwatch plot, sinopsis DATE NAME, like 05/06/2023 total
 		lsnavtex	- list NAVTEX fiels
 		cat			- view navtex NAME file
-		catcron		- list NAME cronloggy, like hagrid,filch,irma,hedwig,tlgbot
-		zinspect	- show all zero values words
-		winspect	- show words from arguments
-		zconvert	- convert one values to zero values wrods
-		oconvert	- convert zero values to one values words
-		zerase		- erase all or provided zero values words
-		kill		- stop bot by exiting the process
+		zinspect	- show Navbow zero state words
+		sinspect	- show Navbow states for words from arguments
+		zconvert	- convert Navbow zero state words to one state (all or from arguments)
+		oconvert	- convert Navbow one state words to zero state (only from arguments)
+		zerase		- erase Navbow zero state words (all or from arguments)
+		add			- add Navbow words with state
+		kill		- stop bot
 	"""
 
+	match command:
 
-	try:
+		case "kill":
 
+			logger.handover("handler", assign=False)
+			logger.info("Commence controller killing")
+			BOT.send_message(user, "bye")
 
-		command, *args = message.split(" ")
+			raise StopIteration
 
 
-		match command:
+		case "uptime":
 
+			uptime = mostsec(TimeTurner().diff(subtrahend=tpoint))
+			response = f"uptime {uptime}"
+			logger.handover("handler", assign=False)
+			logger.info(f"Reporting uptime {uptime}")
 
-			case "help":
 
-				response = server_controller.__doc__
-				logger.info("Help message formed")
+		case "help":
 
-			case "kill":
+			response = server_controller.__doc__
+			logger.handover("handler", assign=False)
+			logger.info("Help message formed")
 
-				logger.info("Commence killing command")
-				BOT.send_message(user, "bye")
-				raise StopIteration
 
-			case _:
+		case "lsnavtex":
 
-				logger.info("Command not recognized")
-				response = f"command \"{command}\" not recognized"
+			response = "\n".join(os.listdir("/srv/A2/R/CKS/ARQ/NAVTEX/"))
+			logger.handover("handler", assign=False)
+			logger.info("Navtex directory listing: " + response.replace("\n",", "))
 
-		# if command == "help": response = ServerController.__doc__
-		## elif command == "uptime": response = Sectimer.sectimer(TimeTurner().diff(subtrahend=start_timer)[2])
 
+		case "cat":
 
-	# 	elif command == "loggy":
-	# 		try:
-	# 			try: date, module, name, level = args[:4]
-	# 			except ValueError:
+			if	(response := "\n".join(
+			
+				byte_scan(os.path.join("/srv/A2/R/CKS/ARQ/NAVTEX/", F.upper()))[1]
+				for F in args
 
-	# 				date, module, name = args[:3]
-	# 				level = None
+			))	and not response.isspace():
 
+				logger.handover("handler", assign=False)
+				logger.info(f"Navtex files listing: {len(response)} symbols")
 
-	# 			try:	D,T = date.split(",")
-	# 			except: D,T = date,None
 
+		case "zinspect":
 
-	# 			try:
-	# 				module, submodule = module.split(",")
-	# 				response = f"{module} {submodule} {name} {level}s loggy for {date}:\n"
-	# 				module = f"{module}/{submodule}"
-	# 				sub = True
+			Navbow.NavbowShelve.grab("/srv/lcontainer/hagrid/Navbag.Shelf", rewrite=True)
+			inspection = Navbow.inspect_state(0)["unknown"]
 
+			if		inspection: response = "unknown words: " + ", ".join(inspection)
+			else:	response = "no unknown words found"
 
-	# 			except ValueError:
 
-	# 				response = f"{module} {name} {level}s loggy for {date}:\n"
-	# 				module = f"{module}/{name}"
-	# 				sub = False
+		case "sinspect":
 
+			Navbow.NavbowShelve.grab("/srv/lcontainer/hagrid/Navbag.Shelf", rewrite=True)
+			inspection = Navbow.inspect(*args)
+			response = str()
 
-	# 			_date = TimeTurner(D)
-	# 			date_line = f"{D} {T}" if T else D
-	# 			_level = level if not level else level.upper()
+			if	inspection["known"]: response += "known words: " + ", ".join(inspection["known"]) + "\n"
+			if	inspection["unknown"]: response += "unknown words: " + ", ".join(inspection["unknown"]) + "\n"
+			if	inspection["undefined"]: response += "undefined words: " + ", ".join(inspection["undefined"])
 
 
-	# 			if sub and submodule == "navBoW":
-	# 				try:
-	# 					with open(f"/srv/lcontainer/{module}/g{submodule}.loggy") as LOGGY:
-	# 						for line in LOGGY:
-	# 							if date_line in line:
-	# 								if _level is not None:
-	# 									if _level in line:
+		case "zconvert":
 
-	# 										response += line
-	# 								else:	response += line
+			Navbow.NavbowShelve.grab("/srv/lcontainer/hagrid/Navbag.Shelf", rewrite=True)
+			words = args or Navbow.inspect_state(0)["unknown"]
+			converted = Navbow.convert(*words, state=1)["converted"]
+			Navbow.NavbowShelve.produce("/srv/lcontainer/hagrid/Navbag.Shelf", magical=True)
 
+			if		converted: response = "words converted: " + ", ".join(converted)
+			else:	response = "no words converted to known"
 
-	# 				except Exception as E:
-	# 					response += f"exception caught: \"{E}\""
 
+		case "oconvert":
 
-	# 			elif sub and submodule == "annex":
-	# 				try:
-	# 					with open(f"/srv/lcontainer/{module}/{_date.Ym_aspath}/g{name}{_date.dmY_asjoin}.{submodule}") as ANNEX:
-	# 						for line in ANNEX:
+			if	args:
 
-	# 							response += line
+				Navbow.NavbowShelve.grab("/srv/lcontainer/hagrid/Navbag.Shelf", rewrite=True)
+				converted = Navbow.convert(*args, state=0)["converted"]
+				Navbow.NavbowShelve.produce("/srv/lcontainer/hagrid/Navbag.Shelf", magical=True)
 
+				if		converted: response = "words converted: " + ", ".join(converted)
+				else:	response = "no words converted to unknown"
+			else:		response = "can convert only specified words to unknown"
 
-	# 				except Exception as E:
-	# 					response += f"exception caught: \"{E}\""
 
+		case "add":
 
-	# 			else:
-	# 				try:
-	# 					with open(f"/srv/lcontainer/{module}/{_date.Ym_aspath}/g{name}{_date.dmY_asjoin}.loggy") as LOGGY:
-	# 						for line in LOGGY:
-	# 							if date_line in line:
-	# 								if _level is not None:
-	# 									if _level in line:
+			if	args:
 
-	# 										response += line
-	# 								else:	response += line
+				Navbow.NavbowShelve.grab("/srv/lcontainer/hagrid/Navbag.Shelf", rewrite=True)
+				added = Navbow.add(*args[:-1], state=args[-1])
+				Navbow.NavbowShelve.produce("/srv/lcontainer/hagrid/Navbag.Shelf", magical=True)
 
+				if(added["added to known"]): response = "added known: " + ", ".join(added["added to known"])
+				elif(added["added to unknown"]): response = "added unknown: " + ", ".join(added["added to unknown"])
+				else: response = "no words added"
 
-	# 				except Exception as E:
-	# 					response += f"exception caught: \"{E}\""
 
+		case "zerase":
 
-	# 		except Exception as E:
-	# 			response = f"couldn't hanlde \"loggy\" command due to: \"{E}\""
+			Navbow.NavbowShelve.grab("/srv/lcontainer/hagrid/Navbag.Shelf", rewrite=True)
+			erased = Navbow.erase_state(0)["unknown erased"]
+			Navbow.NavbowShelve.produce("/srv/lcontainer/hagrid/Navbag.Shelf", rewrite=True)
 
+			if		erased: response  = "unknown words erased: " + ", ".join(erased)
+			else:	response = "no unknown words erased"
 
 
+		case _:
 
-	# 	elif command == "catcron":
+			logger.handover("handler", assign=False)
+			logger.info("Command not recognized")
+			response = f"command \"{command}\" not recognized"
 
-	# 		name = args[0]
-	# 		response = str()
 
+	if	response and not response.isspace() and (timeout := 1):
+		for i in range(0, len(response), 4096):
 
-	# 		if name == "tlgbot":	cronpath = "/srv/lcontainer/gsandbox/v-tlgbot/tlgbot.cronloggy"
-	# 		else:					cronpath = f"/srv/lcontainer/{name}/{name}.cronloggy"
+			BOT.send_message(user, response[i:i+4096])
 
+			sleep(timeout)
+			timeout += 1
+	else:
 
-	# 		try:
-	# 			response = f"cronloggy for {name}:\n"
-	# 			with open(cronpath) as CRONLOGGY:
-	# 				for line in CRONLOGGY:
-
-	# 					response += f"{line}\n"
-
-
-	# 		except Exception as E:
-	# 			response = f"couldn't view {name} cronloggy due to: \"{E}\""
-
-
-
-
-	# 	elif command == "lsplot":
-
-	# 		response = str()
-	# 		try:
-	# 			for item in listdir(f"/srv/dump/bwvisual/{TimeTurner(args[0]).Ymd_aspath}"):
-	# 				response += f"{item}\n"
-
-
-	# 		except Exception as E:
-	# 			response = f"couldn't list plots due to: \"{E}\""
-
-
-
-
-	# 	elif command == "plot":
-	# 		try:
-	# 			date, name = args[:2]
-	# 			D = TimeTurner(date)
-
-
-	# 			with open(f"/srv/dump/bwvisual/{D.Ymd_aspath}/{name}_{D.dmY_asjoin}.png", "rb") as PLOT:
-
-	# 				self.BOT.send_document(message.chat.id, PLOT)
-	# 				response = f"{name}_{D.dmY_asjoin} plot"
-
-
-	# 		except Exception as E:
-	# 			response = f"couldn't hanlde plot due to: \"{E}\""
-
-
-
-
-	# 	elif command == "lsnavtex":
-
-	# 		response = str()
-	# 		for item in listdir("/srv/A2/R/CKS/ARQ/NAVTEX/"):
-	# 			if item.upper().endswith(".TLX"): response += f"{item}\n"
-
-
-
-
-	# 	elif command == "cat":
-	# 		try:
-	# 			file = args[0]
-	# 			response = f"{file}\n"
-
-
-	# 			with open(f"/srv/A2/R/CKS/ARQ/NAVTEX/{file}") as MESSAGE:
-	# 				for line in MESSAGE:
-	# 					response += f"{line}\n"
-
-
-	# 		except Exception as E:
-	# 			response = f"couldn't view \"{args}\" due to: \"{E}\""
-
-
-
-
-	# 	elif command == "zinspect":
-
-	# 		navbow = CurrentBoW()
-	# 		response = navbow.zinspect()
-
-
-	# 		if response:	response = "current zeros:\n" + response
-	# 		else: 			response = "no current zeros"
-
-
-	# 		del navbow
-
-
-
-
-	# 	elif command == "winspect":
-
-	# 		navbow = CurrentBoW()
-	# 		response = navbow.winspect(*args)
-
-
-	# 		if not response: response = "no response for winspect"
-	# 		del navbow
-
-
-
-
-	# 	elif command == "zconvert":
-
-	# 		navbow = CurrentBoW()
-	# 		response = navbow.zconvert(*args)
-
-
-	# 		if response:	response = "zero converting result:\n" + response
-	# 		else:			response = "no result for zero converting"
-
-
-	# 		del navbow
-
-
-
-
-	# 	elif command == "oconvert":
-
-	# 		navbow = CurrentBoW()
-	# 		response = navbow.oconvert(*args)
-
-
-	# 		if response:	response = "one converting result:\n" + response
-	# 		else:			response = "no result for one converting"
-
-
-	# 		del navbow
-
-
-
-
-	# 	elif command == "zerase":
-
-	# 		navbow = CurrentBoW()
-	# 		response = navbow.zerase(*args)
-
-
-	# 		if response:	response = "zero erasing result:\n" + response
-	# 		else:			response = "no result for zero erasing"
-
-
-	# 		del navbow
-
-
-
-
-	# 	elif command == "kill":
-
-	# 		self.BOT.send_message(message.chat.id, "commence killing command")
-	# 		raise StopIteration
-
-
-	# 	else: response = f"command \"{command}\" not recognized"
-
-
-	except StopIteration: raise
-	except Exception as E: response = patronus(E)
-
-
-	timeout = 0
-	for i in range(0, len(response), 4096):
-
-		BOT.send_message(user, response[i:i+4096])
-
-		timeout += 1
-		sleep(timeout)
+		logger.handover("handler", assign=False)
+		logger.warning("Response was not formed")
+		BOT.send_message(user, "response was not formed")
 
 
 
@@ -358,9 +187,15 @@ def server_controller(BOT :TeleBot, user :int, message :str, logger :LibraryCont
 if	__name__ == "__main__":
 
 
-	ALLOWED	= [ int(tlg_id_lngd()) ]
-	LOGGY	= LibraryContrib(init_name="server", handler=f"server_controller.loggy")
+	T		= TimeTurner()
 	BOT		= TeleBot(tlg_bot_serverbot())
+	ALLOWED	= [ int(tlg_id_lngd()) ]
+	LOGGY	= LibraryContrib(
+
+		handler="/srv/lcontainer/sndbx/v-server-controller/server_controller.loggy",
+		init_name="server-controller-bot",
+	)
+	NAVBOW	= NavbowController(LOGGY, reclaiming=True)
 
 
 	@BOT.message_handler(content_types=[ "text" ])
@@ -368,22 +203,37 @@ if	__name__ == "__main__":
 
 		user = request.chat.id
 		message = request.text
+		command, *args = message.split(" ")
 
-		LOGGY.info(f"Processing user id {user} request")
-		LOGGY.info(f"Recieved message \"{message}\"")
+		LOGGY.handover("handler", assign=False)
+		LOGGY.info(f"Processing user id {user} message \"{message}\"")
 
 		if	user not in ALLOWED:
 
 			BOT.send_message(user, "sorry, your id not allowed")
+			LOGGY.handover("handler", assign=False)
 			LOGGY.info(f"User id {user} declined")
+
 			raise StopIteration
-		else:
-			server_controller(BOT, user, message, LOGGY)
+
+		try:	server_controller(BOT, NAVBOW, LOGGY, T, user, command, args)
+		except	StopIteration : raise
+		except	Exception as E:
+
+			response = patronus(E)
+			BOT.send_message(user, response)
+			LOGGY.handover("handler", assign=False)
+			LOGGY.warning(f"Processing failed with {response}")
+
+
+	LOGGY.handover("handler", assign=False)
+	LOGGY.info("Starting server controller bot")
 
 
 	try:	BOT.polling(non_stop=True, interval=0)
 	except	StopIteration:
 
+		LOGGY.handover("handler", assign=False)
 		LOGGY.info("Stopped by kill command")
 		BOT.stop_bot()
 
