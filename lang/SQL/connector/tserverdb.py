@@ -39,7 +39,7 @@ if	__name__ == "__main__":
 			"""
 				CREATE TABLE navbag (
 					id INT NOT NULL AUTO_INCREMENT,
-					word VARCHAR(255) NOT NULL,
+					word VARCHAR(255) UNIQUE NOT NULL,
 					state INT,
 					PRIMARY KEY(id)
 				)
