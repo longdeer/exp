@@ -1,0 +1,1 @@
+def digital_root(n :int) -> int : return n %9 or n and 9
