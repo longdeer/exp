@@ -132,6 +132,8 @@ if	__name__ == "__main__":
 		loggy.info("Table actsnprots populated")
 
 
+
+
 		tserver.execute("DROP TABLE IF EXISTS contracts")
 		tserver.execute(
 			"""
@@ -210,6 +212,8 @@ if	__name__ == "__main__":
 		loggy.info("Table contracts populated")
 
 
+
+
 		tserver.execute("DROP TABLE IF EXISTS letters")
 		tserver.execute(
 			"""
@@ -284,6 +288,49 @@ if	__name__ == "__main__":
 			"""
 		)
 		loggy.info("Table letters populated")
+
+
+
+
+		tserver.execute("DROP TABLE IF EXISTS incomes")
+		tserver.execute(
+			"""
+				CREATE TABLE incomes (
+					id INT NOT NULL AUTO_INCREMENT,
+					date DATE,
+					number CHAR(32),
+					content LONGBLOB,
+					agent LONGBLOB,
+					storage BLOB,
+					price BLOB,
+					comment LONGBLOB,
+					PRIMARY KEY(id)
+				)
+			"""
+		)
+		loggy.info("Table incomes created")
+
+
+
+
+		tserver.execute("DROP TABLE IF EXISTS orders")
+		tserver.execute(
+			"""
+				CREATE TABLE orders (
+					id INT NOT NULL AUTO_INCREMENT,
+					date DATE,
+					number CHAR(32),
+					eosed CHAR(32),
+					content LONGBLOB,
+					acq LONGBLOB,
+					comment LONGBLOB,
+					PRIMARY KEY(id)
+				)
+			"""
+		)
+		loggy.info("Table orders created")
+
+
 
 
 		tserver.execute("DROP TABLE IF EXISTS notes")
