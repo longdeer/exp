@@ -1,3 +1,17 @@
+
+int recursive(int num)
+{
+    if(num <10) return num;
+
+    int sum = 0;
+
+    while(num)
+    {
+        sum += num %10;
+        num /= 10;
+    }
+    return recursive(sum);
+}
 int iterative(int num)
 {
     int current;
