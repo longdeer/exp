@@ -1,25 +1,28 @@
-
-int recursive(int num)
+int mathematical(int n)
 {
-    if(num <10) return num;
+    return n %9 ? n %9 : n ? 9 : n;
+}
+int recursive(int n)
+{
+    if(n <10) return n;
 
     int sum = 0;
 
-    while(num)
+    while(n)
     {
-        sum += num %10;
-        num /= 10;
+        sum += n %10;
+        n /= 10;
     }
     return recursive(sum);
 }
-int iterative(int num)
+int iterative(int n)
 {
     int current;
     int sum;
 
-    while(9 <num)
+    while(9 <n)
     {
-        current = num;
+        current = n;
         sum = 0;
 
         while(current)
@@ -27,7 +30,7 @@ int iterative(int num)
             sum += current %10;
             current /= 10;
         }
-        num = sum;
+        n = sum;
     }
-    return num;
+    return n;
 }
