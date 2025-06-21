@@ -1,4 +1,7 @@
 function mathematical(n) {
+    return 1+ --n %9;
+}
+function logical(n) {
     return (r = n %9) ? r : n ? 9 : n
 }
 function recursive(n) {
