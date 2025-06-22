@@ -1,5 +1,9 @@
 int mathematical(int n)
 {
+    return (n -1) %9 +1;
+}
+int logical(int n)
+{
     return n %9 ? n %9 : n ? 9 : n;
 }
 int recursive(int n)
