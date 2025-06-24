@@ -12,7 +12,7 @@ public int iterative(int n) {
 		while(0 <n) {
 
 			sum += n %10;
-			n = (int) Math.floor(n /10);
+			n /= 10;
 		}
 		n = sum;
 	}
