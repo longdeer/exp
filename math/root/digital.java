@@ -1,6 +1,19 @@
 public int mathematical(int n) {
 	return (n -1) %9 +1;
 }
+public int recursive(int n) {
+
+	if(n <10) return n;
+
+	int sum = 0;
+
+	while(0 <n) {
+
+		sum += n %10;
+		n /= 10;
+	}
+	return  recursive(sum);
+}
 public int iterative(int n) {
 
 	int sum;
