@@ -1,6 +1,13 @@
 public int mathematical(int n) {
 	return (n -1) %9 +1;
 }
+public int logical(int n) {
+
+	int m = n %9;
+	if(0 <m) return m;
+	if(0 <n) return 9;
+	return n;
+}
 public int recursive(int n) {
 
 	if(n <10) return n;
