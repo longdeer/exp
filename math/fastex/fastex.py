@@ -1,13 +1,13 @@
 
 
-def recursive_fastex(self, b :int, e :int) -> int :
+def recursive_fastex(b :int, e :int) -> int :
 
     if not e : return 1
-    r = self.fastex(b,e >>1)
+    r = recursive_fastex(b,e >>1)
     return (b*r*r if e &1 else r*r)
 
 
-def iterative_fastex(self, b :int, e :int) -> int :
+def iterative_fastex(b :int, e :int) -> int :
 
     r = 1
 
