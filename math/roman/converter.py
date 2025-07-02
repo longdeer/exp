@@ -1,6 +1,6 @@
 
 
-def int_to_roman(self, num: int) -> str:
+def int_to_roman(num: int) -> str :
 
 	roma,rem = "M" *(num //1000),num %1000
 
@@ -21,4 +21,82 @@ def int_to_roman(self, num: int) -> str:
 	elif	4 <= rem	: roma,rem = roma + "IV",rem %4
 
 	return	roma + "I" *rem
+
+
+def roman_to_int(s: str) -> int :
+
+	total = 0
+	skip = False
+	
+	for i,c in enumerate(s):
+		if skip:
+
+			skip = False
+			continue
+
+		match c:
+
+			case "M": total += 1000
+			case "D": total += 500
+			case "L": total += 50
+			case "V": total += 5
+			case "C":
+
+				try:
+					match s[i+1]:
+
+						case "D":
+
+							total += 400
+							skip = True
+							continue
+
+						case "M":
+
+							total += 900
+							skip = True
+							continue
+
+				except IndexError: pass
+				total += 100
+
+			case "X":
+				try:
+					match s[i+1]:
+
+						case "L":
+
+							total += 40
+							skip = True
+							continue
+
+						case "C":
+
+							total += 90
+							skip = True
+							continue
+
+				except IndexError: pass
+				total += 10
+
+			case "I":
+				try:
+					match s[i+1]:
+
+						case "V":
+
+							total += 4
+							skip = True
+							continue
+
+						case "X":
+
+							total += 9
+							skip = True
+							continue
+
+				except IndexError: pass
+				total += 1
+
+	return total
 
