@@ -1,6 +1,6 @@
 
 
-def gameOfLife(board :List[List[int]]) -> None :
+def game_of_Life(board :List[List[int]]) -> None :
 
 	r = len(board)
 	c = len(board[0])
