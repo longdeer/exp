@@ -1,6 +1,6 @@
 
 
-int* sift(int size)
+int* sieveArray(int size)
 {
 	int* sieve = calloc(size +1,sizeof(int));
 	long long j;
