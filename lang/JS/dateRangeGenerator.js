@@ -7,7 +7,7 @@
 // All yielded dates must be in the string format YYYY-MM-DD
 
 
-var dateRangeGenerator = function* (start, end, step) {
+function* dateRangeGenerator(start, end, step) {
 
 	let current = new Date(start);
 	let finish = new Date(end);

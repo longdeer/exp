@@ -1,32 +1,53 @@
 
 
-var cancellable = function(generator) {
+// LC2650
+// Sometimes you have a long running task, and you may wish to cancel it before it completes.
+// To help with this goal, write a function cancellable that accepts a generator object
+// and returns an array of two values: a cancel function and a promise.
+// You may assume the generator function will only yield promises.
+// It is your function's responsibility to pass the values resolved
+// by the promise back to the generator. If the promise rejects,
+// your function should throw that error back to the generator.
+// If the cancel callback is called before the generator is done,
+// your function should throw an error back to the generator.
+// That error should be the string "Cancelled" (Not an Error object).
+// If the error was caught, the returned promise should resolve with the next value that was yielded or returned.
+// Otherwise, the promise should reject with the thrown error. No more code should be executed.
+// When the generator is done, the promise your function returned should resolve the value the generator returned.
+// If, however, the generator throws an error, the returned promise should reject with the error.
+// An example of how your code would be used:
+//		function* tasks() {
+//		  const val = yield new Promise(resolve => resolve(2 + 2));
+//		  yield new Promise(resolve => setTimeout(resolve, 100));
+//		  return val + 1; // calculation shouldn't be done.
+//		}
+//		const [cancel, promise] = cancellable(tasks());
+//		setTimeout(cancel, 50);
+//		promise.catch(console.log); // logs "Cancelled" at t=50ms
+// If instead cancel() was not called or was called after t=100ms, the promise would have resolved 5
 
-	/*
-		Assumes "generator" yields and receives back all values.
-		Any Error thrown back to "generator".
-		First function in return array will stop "generator".
-	*/
 
-    let cancelled = false;
-    let current;
-    let flow;
+function cancellable(generator) {
 
-    return [
+	let cancelled = false;
+	let current;
+	let flow;
 
-        () => cancelled = true,
-        (async () => {
+	return [
 
-            current = generator.next();
+		() => cancelled = true,
+		(async () => {
 
-            while(!current.done)
-                try {
-                    flow = await current.value;
-                    current = cancelled ? generator.throw("Cancelled") : generator.next(flow)
-                }
-                catch(e) { current = generator.throw(e) }
-            return current.value
-        })()
-    ]
+			current = generator.next();
+
+			while(!current.done)
+				try {
+					flow = await current.value;
+					current = cancelled ? generator.throw("Cancelled") : generator.next(flow)
+				}
+				catch(e) { current = generator.throw(e) }
+			return current.value
+		})()
+	]
 }
 

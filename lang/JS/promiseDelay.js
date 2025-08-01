@@ -19,7 +19,7 @@ function delayAll1(functions, ms) {
 }
 
 
-var delayAll = function(functions, ms) {
+function delayAll2(functions, ms) {
 	return functions.map(F => (...args) => new Promise((res,rej) => {
 		setTimeout((async() => {
 			try {

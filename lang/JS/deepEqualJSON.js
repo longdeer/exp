@@ -1,10 +1,17 @@
 
 
 // LC2628
-// Assumed "o1" and "o2" are the output of JSON.parse (valid JSON)
+// Given two values o1 and o2, return a boolean value indicating whether two values, o1 and o2, are deeply equal.
+// For two values to be deeply equal, the following conditions must be met:
+//		-If both values are primitive types, they are deeply equal if they pass the === equality check.
+//		-If both values are arrays, they are deeply equal if they have the same elements in the same order,
+//		and each element is also deeply equal according to these conditions.
+//		-If both values are objects, they are deeply equal if they have the same keys,
+//		and the associated values for each key are also deeply equal according to these conditions.
+// You may assume both values are the output of JSON.parse. In other words, they are valid JSON.
 
 
-var areDeeplyEqual = function(o1, o2) {
+function areDeeplyEqual(o1, o2) {
 
 	if(Array.isArray(o1) && Array.isArray(o2)) {
 
@@ -25,7 +32,6 @@ var areDeeplyEqual = function(o1, o2) {
 			if(!areDeeplyEqual(o1[o1k[i]], o2[o2k[i]])) return false;
 		}
 		return true
-	}
-	return o1 === o2
+	}	return o1 === o2
 }
 

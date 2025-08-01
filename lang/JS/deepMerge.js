@@ -14,7 +14,7 @@
 // You can assume A and B are the output of JSON.parse().
 
 
-var deepMerge = function(A, B) {
+function deepMerge(A, B) {
 
 	if(A && typeof(A) === "object" && B && typeof(B) === "object" && Array.isArray(A) === Array.isArray(B)) {
 		for(let key of new Set([ ...Object.keys(A),...Object.keys(B) ]))
