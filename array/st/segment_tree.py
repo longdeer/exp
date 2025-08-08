@@ -2,6 +2,7 @@
 
 # LC3479
 class MaxSegmentTree:
+	def __init__(self, src_size :int): self.st = [ 0 ] *(src_size *4)
 	def build(self, node :int, l :int, r :int, arr :List[int]):
 
 		if l == r : self.st[node] = arr[l]
@@ -15,7 +16,7 @@ class MaxSegmentTree:
 
 			self.st[node] = max(self.st[f],self.st[f+1])
 
-	def update(self, node :int, l :int, r :int, target :int):
+	def update(self, node :int, l :int, r :int, target :int) -> bool :
 
 		if	l == r:
 			if	target <= self.st[node]:
