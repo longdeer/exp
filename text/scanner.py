@@ -1,8 +1,8 @@
-from os				import access	as osaccess
-from os				import path		as ospath
-from os				import R_OK
-from pathlib		import Path
-from typing			import Tuple
+from os			import access	as osaccess
+from os			import path		as ospath
+from os			import R_OK
+from pathlib	import Path
+from typing		import Tuple
 
 
 
@@ -11,7 +11,7 @@ from typing			import Tuple
 
 
 
-def byte_scan(path :str | Path, carriage :bool =False) -> Tuple[bool,str] :
+def utf8_broken_byte_scan(path :str | Path, carriage :bool =False) -> Tuple[bool,str] :
 
 	"""
 		Reads "path" file in byte mode and recreates whole text. If any not utf-8 symbol will be
@@ -41,6 +41,23 @@ def byte_scan(path :str | Path, carriage :bool =False) -> Tuple[bool,str] :
 
 		return	broken,	text
 	return		True,	text
+
+
+
+
+
+
+
+
+def utf8_byte_scan_collection(path :str | Path) -> str :
+
+	"""
+		Applies "utf8_broken_byte_scan" on the file at "path" and returns string
+		which is set of lexicographically sorted symbols obtained from resulted text.
+	"""
+
+	scan = utf8_broken_byte_scan(path)
+	return str().join(sorted(set(scan[1]))) + (" (broken)" if scan[0] else "")
 
 
 
