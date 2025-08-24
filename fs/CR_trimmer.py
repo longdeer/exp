@@ -23,7 +23,7 @@ def trim_CR(pwd :str, *targets :str):
 
 			with open(target, "w") as tmp:
 				with open(file) as ent:
-					for line in ent : tmp.write(f"{line.strip('\r').strip('\n')}\n")
+					for line in ent : tmp.write(line.strip("\r").strip("\n") + "\n")
 
 
 			rename(target, file)
