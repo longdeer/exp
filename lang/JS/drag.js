@@ -1,5 +1,11 @@
 
 
+/*
+ *	JavaScript: The Definitive Guide
+ *	17.5 Mouse Events
+ *	Example 17-2. Dragging document elements
+ */
+
 function drag(target, event) {
 
 	var scroll = getScrollOffsets();

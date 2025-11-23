@@ -1,5 +1,11 @@
 
 
+/*
+ *	JavaScript: The Definitive Guide
+ *	17.6 Mousewheel Events
+ *	Example 17-3. Handling mousewheel events
+ */
+
 function enclose(content, framewidth, frameheight, contentX, contentY) {
 
 	framewidth = Math.max(framewidth,50);
