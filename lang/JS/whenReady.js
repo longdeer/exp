@@ -1,5 +1,11 @@
 
 
+/*
+ *	JavaScript: The Definitive Guide
+ *	17.4 Document Load Events
+ *	Example 17-1. Invoking functions when the document is ready
+ */
+
 var whenReady = (function() {
 
 	var funcs = [];
