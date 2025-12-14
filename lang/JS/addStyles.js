@@ -1,5 +1,11 @@
 
 
+/*
+ *	JavaScript: The Definitive Guide
+ *	16.6.3 Creating New Sylesheets
+ *	Example 16-16. Creating a new stylesheet
+ */
+
 function addStyles(styles) {
 
 	let styleElement;
