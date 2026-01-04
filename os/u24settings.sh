@@ -8,3 +8,16 @@ sudo apt install sublime-text sublime-merge gnome-shell-extension-manager gnome-
 sudo extrepo enable librewolf
 sudo apt install librewolf
 sudo snap install brave
+sudo apt install gnome-shell-extensions
+sudo apt install wireshark
+sudo usermod -aG wireshark $(whoami)
+sh -c "cat > $HOME/.bash_aliases" << EOL
+# routine
+alias updateit='sudo apt update && apt list --upgradable'
+alias upgradeit='sudo apt upgrade -y'
+# power management
+alias offf='sudo systemctl poweroff'
+alias reee='sudo systemctl reboot'
+# misc
+alias py='python3'
+EOL
