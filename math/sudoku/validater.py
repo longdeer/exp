@@ -1,41 +1,36 @@
 
 
-def isValidSudoku(board :List[List[str]]) -> bool :
+# Leetcode Q36. Valid Sudoku
+# Determine if a 9 x 9 Sudoku board is valid. Only the filled cells need to be validated according to the following rules:
+#  Each row must contain the digits 1-9 without repetition.
+#  Each column must contain the digits 1-9 without repetition.
+#  Each of the nine 3 x 3 sub-boxes of the grid must contain the digits 1-9 without repetition.
+# Note:
+#  A Sudoku board (partially filled) could be valid but is not necessarily solvable.
+#  Only the filled cells need to be validated according to the mentioned rules.
 
-	vcol = [ list() for i in range(9) ]
-	subs = {
 
-		( "00","01","02", "10","11","12", "20","21","22" ) : list(),
-		( "03","04","05", "13","14","15", "23","24","25" ) : list(),
-		( "06","07","08", "16","17","18", "26","27","28" ) : list(),
-		( "30","31","32", "40","41","42", "50","51","52" ) : list(),
-		( "33","34","35", "43","44","45", "53","54","55" ) : list(),
-		( "36","37","38", "46","47","48", "56","57","58" ) : list(),
-		( "60","61","62", "70","71","72", "80","81","82" ) : list(),
-		( "63","64","65", "73","74","75", "83","84","85" ) : list(),
-		( "66","67","68", "76","77","78", "86","87","88" ) : list(),
-	}
+def isValidSudoku(board: List[List[str]]) -> bool:
 
-	for r,RAW in enumerate(board):
+	rows = [ set() for _ in range(9) ]
+	cols = [ set() for _ in range(9) ]
+	boxs = [ set() for _ in range(9) ]
 
-		vraw = list()
+	for x in range(9):
+		for y in range(9):
 
-		for C,POINT in enumerate(RAW):
+			if	(current := board[x][y]) != ".":
 
-			if	POINT != ".":
+				if current in rows[x]: return False
+				if current in cols[y]: return False
 
-				if	POINT in vraw	: return False
-				if	POINT in vcol[C]: return False
+				box = (x //3) *3 + (y //3)
 
-				vraw.append(POINT)
-				vcol[C].append(POINT)
-				KEY = f"{r}{C}"
+				if current in boxs[box]: return False
 
-				for sub,box in subs.items():
-					if	KEY in sub:
-
-						if	POINT in box: return False
-						box.append(POINT)
+				rows[x].add(current)
+				cols[y].add(current)
+				boxs[box].add(current)
 
 	return	True
 
