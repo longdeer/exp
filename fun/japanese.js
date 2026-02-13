@@ -1,0 +1,1 @@
+console.log(+"How do you say 'what' in Japanese?" + "i");
